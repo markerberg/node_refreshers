@@ -41,3 +41,53 @@ const server = http.createServer((req, res) => {
 
 server.listen(3000);
 ```
+
+### load slash route, see form, enter value, hit button, reach url on our server and log it, redirect it
+```
+const http = require('http');
+
+const server = http.createServer((req,res) => {
+    const url = req.url;
+
+    // first route
+    if (url === '/') {
+        res.setHeader('Content-type', 'text/html');
+        res.write('<html>')
+        res.write('<head><title>assignment</title></head>');
+        res.write('<body><form action="/create-user" method="POST"><input type="text" name="username"><button type="submit"></form></body>')
+        res.write('</html>')
+        return res.end();
+    }
+
+    // sedond route
+    if (url === '/users') {
+        res.setHeader('Content-type', 'text/html');
+        res.write('<html>')
+        res.write('<head><title>assignment</title></head>');
+        res.write('<body><ul><li>cool</li><li>hot</li></ul></body>')
+        res.write('</html>')
+        return res.end();
+    }
+
+    if (url === '/create-user') {
+        const body = [];
+        req.on('data', (chunk) => {
+            // we have an array of buffered chunks
+            body.push(chunk);
+        });
+        // we want to read the data once all buffered chunks are available. Do that in end()
+        // end is used when all data is read and has been pushed to the body
+        // in this stage we can transform all the buffered data into readable string
+        req.on('end', () => {
+            const parsedBody = Buffer.concat(body).toString();
+            // data is available as username=foo_bar_entry so we can split the data by equal sign and get the second el(which is the value that was set)
+            console.log(parsedBody.split('=')[1]);
+        });
+        res.statusCode=302;
+        res.setHeader('Location', '/');
+        res.end();
+    }
+})
+
+server.listen(3000);
+```

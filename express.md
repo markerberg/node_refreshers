@@ -57,3 +57,37 @@ app.use((req,res,next) => {
 
 app.listen(3000);
 ```
+
+### express serve html files and static content
+```
+// THIS IS MAIN APP.JS
+
+const express = require('express');
+const mainRoute = require('./routes/index');
+const app = express();
+const path = require('path');
+
+// pass along the path of the folder we want to serve statically
+// make request for any static files point to the public directory
+// we assume that we have some .js or .css or .img file in our html files that needs to be accessed
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(mainRoute);
+
+app.listen(3000);
+________________________________________________
+// THIS IS ROUTES/INDEX.JS THATS IMPORTED ABOVE
+const express = require('express');
+const router = express.router();
+const path = require('path');
+
+router.get('/', (req, res, next) => {
+    res.sendFile(path.join(__dirname, '../', 'views', 'someFile.html'));
+});
+
+router.get('/users', (req, res, next) => {
+    res.sendFile(path.join(__dirname, '../', 'views', 'users.html'));
+});
+
+module.exports = router;
+```

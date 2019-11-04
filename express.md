@@ -7,6 +7,8 @@ const path = require('path');
 
 const authorRoutes = require('./routes/author');
 
+const products = [];
+
 // for body parser, we define it at top before out other routing middleware bc we want this middleware to run all the time
 app.use (bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public'))); // built in middleware to serve static files
@@ -27,7 +29,11 @@ app.use('/author', authorRoutes);
 // this express app.get() ONLY fires for incomming get requests with /add-product path!
 app.get('/add-product' ,(req,res,next) => {
     console.log('add user middleware');
-    res.send('<form action="add-product" method="POST"><input type="text" name="title"><button type="submit">Add prod</button></form>');
+    const products = products;
+    // assume there is a producs.hbs file thats rendered on the server bc its a templating language
+    // we pass in the products arr in the template by passing an obj which maps it to a key
+    res.render('products', {prods: products, pageTitle: 'Prods', activeAcct: true});
+    // res.send('<form action="add-product" method="POST"><input type="text" name="title"><button type="submit">Add prod</button></form>');
 });
 
 app.get('/html-please', (req, res, next) => {
@@ -39,7 +45,8 @@ app.get('/html-please', (req, res, next) => {
 // we're using the same path as before, but its a different method so its allowed
 app.post('/add-product', (req, res, next) => {
     // extract what user sends us using the bodyParser middleware
-    console.log(req.body);
+    // since we are pushing to a reference type, we can pull this products[] into another module and use it!
+    products.push({title: req.body.title})
     // redirect
     res.redirect('/');
 });
